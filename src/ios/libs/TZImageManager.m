@@ -441,8 +441,16 @@ static dispatch_once_t onceToken;
     if (progressHandler) {
         [option setProgressHandler:progressHandler];
     }
+    CGFloat scale = [UIScreen mainScreen].scale;
+    CGFloat aspectRatio = asset.pixelWidth / (CGFloat)asset.pixelHeight;
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    CGFloat pixelWidth = screenWidth * scale;
+    CGFloat pixelHeight = pixelWidth / aspectRatio;
+    CGSize targetSize = CGSizeMake(pixelWidth, pixelHeight);
+
     option.resizeMode = PHImageRequestOptionsResizeModeFast;
-    return [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:PHImageManagerMaximumSize contentMode:PHImageContentModeAspectFit options:option resultHandler:^(UIImage *result, NSDictionary *info) {
+    return [[PHImageManager defaultManager] requestImageForAsset:asset targetSize:targetSize contentMode:PHImageContentModeAspectFill options:option resultHandler:^(UIImage *result, NSDictionary *info) {
         BOOL downloadFinined = (![[info objectForKey:PHImageCancelledKey] boolValue] && ![info objectForKey:PHImageErrorKey]);
         if (downloadFinined && result) {
             result = [self fixOrientation:result];
@@ -493,6 +501,60 @@ static dispatch_once_t onceToken;
         
     }];
 }
+
+// - (UICollectionViewFlowLayout *)collectionViewFlowLayoutForOrientation:(UIInterfaceOrientation)orientation
+// {
+//     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+//     {
+//         if(!portraitLayout)
+//         {
+//             portraitLayout = [[UICollectionViewFlowLayout alloc] init];
+//             portraitLayout.minimumInteritemSpacing = 2;
+//             // portraitLayout.minimumInteritemSpacing = self.picker.minimumInteritemSpacing;
+//             int cellTotalUsableWidth = screenWidth - 8;
+//             // int cellTotalUsableWidth = screenWidth - (self.picker.colsInPortrait-1)*self.picker.minimumInteritemSpacing;
+//             portraitLayout.itemSize = CGSizeMake(cellTotalUsableWidth/self.picker.colsInPortrait, cellTotalUsableWidth/self.picker.colsInPortrait);
+//             double cellTotalUsedWidth = (double)portraitLayout.itemSize.width*self.picker.colsInPortrait;
+//             double spaceTotalWidth = (double)screenWidth-cellTotalUsedWidth;
+//             double spaceWidth = spaceTotalWidth/(double)(self.picker.colsInPortrait-1);
+//             portraitLayout.minimumLineSpacing = spaceWidth;
+//         }
+//         return portraitLayout;
+//     }
+//     else
+//     {
+//         if(UIInterfaceOrientationIsLandscape(orientation))
+//         {
+//             if(!landscapeLayout)
+//             {
+//                 landscapeLayout = [[UICollectionViewFlowLayout alloc] init];
+//                 landscapeLayout.minimumInteritemSpacing = self.picker.minimumInteritemSpacing;
+//                 int cellTotalUsableWidth = screenHeight - (self.picker.colsInLandscape-1)*self.picker.minimumInteritemSpacing;
+//                 landscapeLayout.itemSize = CGSizeMake(cellTotalUsableWidth/self.picker.colsInLandscape, cellTotalUsableWidth/self.picker.colsInLandscape);
+//                 double cellTotalUsedWidth = (double)landscapeLayout.itemSize.width*self.picker.colsInLandscape;
+//                 double spaceTotalWidth = (double)screenHeight-cellTotalUsedWidth;
+//                 double spaceWidth = spaceTotalWidth/(double)(self.picker.colsInLandscape-1);
+//                 landscapeLayout.minimumLineSpacing = spaceWidth;
+//             }
+//             return landscapeLayout;
+//         }
+//         else
+//         {
+//             if(!portraitLayout)
+//             {
+//                 portraitLayout = [[UICollectionViewFlowLayout alloc] init];
+//                 portraitLayout.minimumInteritemSpacing = self.picker.minimumInteritemSpacing;
+//                 int cellTotalUsableWidth = screenWidth - (self.picker.colsInPortrait-1)*self.picker.minimumInteritemSpacing;
+//                 portraitLayout.itemSize = CGSizeMake(cellTotalUsableWidth/self.picker.colsInPortrait, cellTotalUsableWidth/self.picker.colsInPortrait);
+//                 double cellTotalUsedWidth = (double)portraitLayout.itemSize.width*self.picker.colsInPortrait;
+//                 double spaceTotalWidth = (double)screenWidth-cellTotalUsedWidth;
+//                 double spaceWidth = spaceTotalWidth/(double)(self.picker.colsInPortrait-1);
+//                 portraitLayout.minimumLineSpacing = spaceWidth;
+//             }
+//             return portraitLayout;
+//         }
+//     }
+// }
 
 // added
 - (BOOL)checkHEIF:(id)asset {
