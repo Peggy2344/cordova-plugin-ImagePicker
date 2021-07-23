@@ -76,7 +76,7 @@
         [_doneButton setTitleColor:tzImagePickerVc.oKButtonTitleColorNormal forState:UIControlStateNormal];
     } else {
         [_doneButton setTitle:[NSBundle tz_localizedStringForKey:@"Done"] forState:UIControlStateNormal];
-        [_doneButton setTitleColor:[UIColor colorWithRed:(83/255.0) green:(179/255.0) blue:(17/255.0) alpha:1.0] forState:UIControlStateNormal];
+        [_doneButton setTitleColor:[UIColor colorWithRed: 0.20 green: 0.72 blue: 0.61 alpha: 1.00] forState:UIControlStateNormal];
     }
     [_toolBar addSubview:_doneButton];
     
