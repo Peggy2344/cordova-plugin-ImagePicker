@@ -66,7 +66,8 @@
 
 
 #pragma mark - 四类个性化设置，这些参数都可以不传，此时会走默认设置
-    imagePickerVc.isSelectOriginalPhoto = _isSelectOriginalPhoto;
+    imagePickerVc.isSelectOriginalPhoto = YES;
+    // imagePickerVc.isSelectOriginalPhoto = _isSelectOriginalPhoto;
 
     if (self.maxCountTF > 1) {
         // 1.设置目前已经选中的图片数组
