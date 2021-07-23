@@ -229,26 +229,27 @@
         id asset = assets[idx];
         
         __block NSInteger index = idx;
+
+        NSString *originName = [self getFileNameForAsset:asset];
+        NSString *originExt = [[originName pathExtension] lowercaseString];
         
-        
-        [[TZImageManager manager] getOriginalPhotoDataWithAsset:asset completion:^(NSData *data, NSDictionary *info, BOOL isDegraded) {
-            
-            __block NSString *fileName = [self getFileNameForAsset:asset];
-            if ([info valueForKey:@"PHImageExtension"] != nil) {
-                NSString *newExtension = [info valueForKey:@"PHImageExtension"];
-                fileName = [fileName stringByAppendingString:newExtension];
-            }
-            NSString *path = [self saveNSDataToFile:data withName:fileName];
-            NSDictionary* fileObj = @{
-                                      @"path": path,
-                                      @"width": @([asset pixelWidth]),
-                                      @"height": @([asset pixelHeight]),
-                                      @"size": @([data length])
-                                      };
-            [originalPaths addObject:fileObj];
-            
-            index += 1;
-            [self saveOriginalImage:assets currentIdx:index originalPathArray:originalPaths completion:completion];
+        [[TZImageManager manager] getOriginalPhotoWithAsset:asset newCompletion:^(UIImage *photo, NSDictionary *info, BOOL isDegraded) {
+            if (!isDegraded) {
+                    @autoreleasepool {
+                        NSString *fileName = [[[originName lastPathComponent] stringByDeletingPathExtension] stringByAppendingPathExtension:@"JPG"];
+                        NSData *imageData = UIImageJPEGRepresentation(photo, 0.9);
+                        NSString *path = [self saveNSDataToFile:imageData withName:fileName];
+                        NSDictionary* fileObj = @{
+                                                @"path": path,
+                                                @"width": @([asset pixelWidth]),
+                                                @"height": @([asset pixelHeight]),
+                                                @"size": @([imageData length])
+                                                };
+                        [originalPaths addObject:fileObj];
+                        index += 1;
+                        [self saveOriginalImage:assets currentIdx:index originalPathArray:originalPaths completion:completion];
+                    };
+            };
         }];
     }
     else {
@@ -830,3 +831,5 @@
 #pragma clang diagnostic pop
 
 @end
+
+
